@@ -1,15 +1,19 @@
-/*jshint node:true*/
+/* eslint-env node*/
 module.exports = {
-  description: ''
+  description: 'ember-cli-excel2geojson installation blueprint',
+  normalizeEntityName() {},
 
-  // locals: function(options) {
-  //   // Return custom template variables here.
-  //   return {
-  //     foo: options.entity.options.foo
-  //   };
-  // }
-
-  // afterInstall: function(options) {
-  //   // Perform extra work here.
-  // }
+  beforeInstall() {
+    return this.addBowerPackageToProject('js-xlsx', '0.11.0').then(function() {
+        return this.addAddonsToProject({
+        packages: [{
+          name: 'ember-light-table',
+          target: '~1.9.0'
+        },{
+          name: 'ember-leaflet',
+          target: '~3.0.12'
+        }]
+      })
+    }.bind(this));
+  }
 };

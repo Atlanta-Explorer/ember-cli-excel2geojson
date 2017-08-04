@@ -1,298 +1,73 @@
-<style>
-:root {
-    --mainHue: 28;
-    --normalColor: hsl(var(--mainHue), 91%, 54%);
-    --darkColor: hsl(var(--mainHue), 91%, 33%);
-    --lightColor: hsl(var(--mainHue), 100%, 89%);
-    --gray: #aaa;
-}
-#toolContainer * {
-    font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir", "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans", "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu", "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
-}
-#mainTable {
-    width: 100%;
-    height: 100%;
-    table-layout: fixed;
-}
-#mainTable td {
-    vertical-align: top;
-}
-#dataTable {
-    border-spacing: 0;
-}
-#dataTable td {
-    padding: 0;
-}
-.dataTableCell {
-    height: 24px;
-    overflow: hidden;
-    margin: 0;
-}
-.text {
-    width: 100%;
-    min-height: 500px;
-}
-#dataTableContainer {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    overflow: hidden;
-    display: inline-block;
-}
-#tdDataTable {
-    width: 55%;
-    max-width: 55%;
-    /*max-height: 100%;*/
-}
-.rightPart {
-    padding-left: 10px;
-    font-size: 1.2em;
-}
-.rowNumber {
-    width: 30px;
-    border-bottom:1px solid var(--darkColor);
-}
-.colNumber {
-    border-right:1px solid var(--darkColor);
-    border-bottom:1px solid var(--darkColor);
-    position: relative;
-}
-#dataTable {
-    font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
-}
-.dataTableCell {
-    font-size:1em;
-    border-right:1px solid var(--darkColor);
-    border-bottom:1px solid var(--darkColor);
-}
-.rowNumber, .colNumber {
-    height: 24px;
-    font-size:1.1em;
-    background-color: var(--normalColor);
-    color:#ffffff;
-    text-align: center;
-    border-right:1px solid var(--darkColor);
-}
-#dataTable tr:nth-child(odd) td .dataTableCell {
-    color:#000000;
-    background-color: var(--lightColor);
-}
-#rightPartDiv ul {
-    counter-reset: li; /* Initiate a counter */
-    list-style: none; /* Remove default numbering */
-    *list-style: decimal; /* Keep using default numbering for IE6/7 */
-    font: 15px 'trebuchet MS', 'lucida sans';
-    padding: 0;
-    position: relative;
+<div style='width: 80%; margin: 0 auto;'>
+<input multiple="true" id='sheet' onchange={{action "loadSpreadsheet"}} accept="*" type="file"/>
+{{#if table}}
+{{#light-table table height='65vh' as |t|}}
+  {{t.head
+    iconAscending='fa fa-sort-asc'
+    iconDescending='fa fa-sort-desc'
+    resizeOnDrag=true
+    fixed=true
+  }}
 
-}
-#rightPartDiv ul li {
-    position: relative;
-    margin-left: 2em; /* Add some left margin for inner lists */
-    padding: 2px;
-}
-#rightPartDiv li::before, #rightPartDiv li::after {
-    content: "";
-    position: absolute;
-    left: -12px;
-}
-#rightPartDiv li::before {
-    border-top: 1px solid var(--gray);
-    top: 10px;
-    width: 8px;
-    height: 0;
-}
-#rightPartDiv li::after {
-    border-left: 1px solid var(--gray);
-    top: 2px;
-    width: 0;
-    height: 100%;
-}
-#rightPartDiv ul > li:last-child::after {
-    height: 9px;
-}
-#propertiesRoot textarea {
-    display: block;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    width: 268px;
-}
-.addButton {
-    margin-left: 1.65em;
-}
-.resizeColumnDiv {
-    position: absolute;
-    cursor: col-resize;
-    height: 24px;
-    top: 0;
-    z-index: 100;
-}
-#propertiesRoot li *{
-    margin-right: 5px;
-}
-.unselectable {
-    user-select: none;
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
-}
-#rightPartDiv {
-    overflow: auto;
-    display: none;
-}
-#progressText {
-    font-size: 1.5em;
-    font-weight: bold;
-    font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
-}
-.button {
-    cursor: pointer;
-    display: inline-block;
-}
-.normalColor {
-    color: #FFF;
-    background-color: var(--normalColor);
-}
-.darkColor {
-    color: #FFF;
-    background-color: var(--darkColor);
-}
-.lightColor {
-    color: #FFF;
-    background-color: var(--lightColor);
-}
-.small {
-    font-size: .75em;
-    padding: 5px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-.medium {
-    font-size: 1em;
-    padding: 10px;
-    padding-left: 14px;
-    padding-right: 14px;
-}
-.big {
-    font-size: 1.5em;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-left: 30px;
-    padding-right: 30px;
-}
-.stretchedButton {
-    width: 100%;
-    cursor: pointer;
-    display: inline-block;
-    text-align: center;
-    padding-left: 0;
-    padding-right: 0;
-}
-#progressContainer {
-    width: 99%;
-    height: 20px;
-    border: 2px solid var(--normalColor);
-}
-#progressBar {
-    width: 0;
-    height: 100%;
-    background-color: var(--normalColor);
-    transition: .2s all;
-}
-#dataTableContainerOuter {
-    width: 100%;
-    height: 100%;
-}
-.dummyDiv {
-    width: 0;
-    height: 0;
-}
-#toolContainer {
-    width: 100%;
-    height: 100%;
-}
-#configTable {
-    width: 100%;
-}
-</style>
-<div id='toolContainer'>
-            <style id='dataTableStyleSheet'>
-            </style>
-            <table id='mainTable'>
-                <tr>
-                    <td rowspan='2' id='tdDataTable'>
-                        <div id='dataTableContainer'>
-                            <a class='button normalColor medium' onclick='tableClear()'>Reset</a>
-                            <br/><br/>
-                            <table id='dataTable'>
-                                <tr>
-                                    <td>Load spreadsheet</td>
-                                </tr>
-                                <tr>
-                                    <td><input type='file' id='excelFileInput' onchange='loadSpreadsheet(this)'/></td>
-                                </tr>
-                                <tr>
-                                    <td>Or paste data in text box</td>
-                                </tr>
-                                <tr>
-                                    <td><input id='pasteSpreadSheet' /></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </td>
-                    <td class='rightPart'>
-                        <div id='rightPartDiv'>
-                            Skip rows (separate by commas, use "-" for range.) <input id='rowSkip' />
-                            <br/>
-                            Coordinate:
-                            <ul>
-                                <li>
-                                    Latitude: <select id='lat' class='dataInputCoordinates'></select>
-                                </li><li>
-                                    Longitude: <select id='lng' class='dataInputCoordinates'></select>
-                                </li><li>
-                                    Street address (if needed): <select id='address' class='dataInputCoordinates'></select>
-                                </li>
-                            </ul>
-                            Properties:
-                            <ul id='propertiesRoot'>
-                            </ul>
-                            <a class='button normalColor medium addButton' onclick='addProperty(this, true)' id='addRootProperty'>＋</a>
-                            <hr/>
-                            <table id='configTable'>
-                                <tr>
-                                    <td colspan=2>
-                                        <a class='stretchedButton normalColor medium'
-                                                onclick='if (confirm("Are you sure you want to reset?"))
-                                                resetProperties()' id='loadConfiguration'>Reset</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <a class='stretchedButton darkColor medium'
-                                                onclick='saveConfiguration(this)'
-                                                id='saveConfiguration'>Save Configuration</a>
-                                    </td>
-                                    <td>
-                                        <a class='stretchedButton normalColor medium'
-                                        onclick='loadConfiguration(this)'
-                                        id='loadConfiguration'>Load Configuration</a>
-                                    </td>
-                                </tr>
-                            </table>
-                            <hr/>
-                            <a onclick='generate()' class='stretchedButton normalColor big'>Generate</a>
-                            <hr/>
-                            <div id='progressContainer'><div id='progressBar'></div></div>
-                            <hr/>
-                            Output GeoJSON:
-                            <a class='button normalColor medium' onclick='document.getElementById("outputText").innerText="";'>Clear</a>
-                            <br/><br/>
-                            <textarea readonly id='outputText' class='text'></textarea>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
+  {{#t.body
+    canSelect=false
+    as |body|
+  }}
+    {{#if isLoading}}
+      {{#body.loader}}
+        {{table-loader}}
+      {{/body.loader}}
+    {{/if}}
+  {{/t.body}}
+
+{{/light-table}}
+<div class='preview'>
+<div class='select'>
+{{#each types as |type|}}
+  {{type.label}}
+    <select onchange={{action 'mapAttribute' type.value}}>
+      <option disabled selected>
+        Select One
+      </option>
+      {{#each columns as |column|}}
+        <option value='{{column.label}}'>
+          {{column.label}}
+        </option>
+      {{/each}}
+    </select>
+{{/each}}
+</div>
+<a {{action 'generateFeaturs'}}><h1>generateFeatures</h1></a>
+
+<div class='geojson'>
+  {{#leaflet-map lat=lat lng=lng zoom=zoom}}
+  {{tile-layer url="http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"}}
+  {{#each geoJsonFeatures as |feature|}}
+  {{!-- {{#popup-layer}}
+      <table>
+        <tr>
+          <td>
+            Title
+          </td>
+          <td>
+            {{feature.properties.title}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Description
+          </td>
+          <td>
+            {{feature.properties.description}}
+          </td>
+        </tr>
+      </table>
+    {{/popup-layer}} --}}
+  {{geojson-layer geoJSON=feature onEachFeature=hi}}
+  {{/each}}
+  {{/leaflet-map}}
+  <textarea>{{strGeojson}}</textarea>
+</div>
+</div>
+{{/if}}
+</div>

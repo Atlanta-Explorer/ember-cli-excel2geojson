@@ -1,3 +1,6 @@
+isDevelopingAddon() {
+return true;
+}
 var DEFAULT_CONFIGURATION = [
 	  {
 		"type": "coordinate",
@@ -75,12 +78,12 @@ function loadSpreadsheet(fileInput) { // Receive data through loading a spreadsh
     var file = fileInput.files[0];
     var extension = getExtension(file.name);
     var reader = new FileReader();
-    
+
     if (extension == 'xlsx') {
         reader.onload = function(event) {
             var xlsxData = event.target.result;
             var workbook = XLSX.read(xlsxData, {'type': 'binary'});
-            
+
             workbook.SheetNames.forEach(function(sheetName) {
                 var tsvText = XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName], {'FS': '\t'}); // Sheet to tsv instead of csv.
                 data = parseText(tsvText, '\t');
@@ -213,7 +216,7 @@ function populateTable() {
     document.getElementById('dataTable').innerHTML = tableHTML;
     refreshColumnSizes();
     resize();
-    
+
     tablePopulated = true;
     document.getElementById('dataTableContainer').style.overflow = 'scroll';
     document.getElementById('rightPartDiv').style.display = 'block';
@@ -303,14 +306,14 @@ function addProperty(addButton, hasName) {
 function addPropertyToUL(ulElement, hasName) {
     var newComboBox = document.createElement('select');
     var newRemoveButton = document.createElement('a');
-    
+
     newComboBox.className = 'dataInput';
     newRemoveButton.className = 'button normalColor small';
     newRemoveButton.onclick = function() {removeProperty(this)};
     newRemoveButton.innerText = 'X';
-    
+
     var newPropertyLi = document.createElement('li');
-    
+
     var newInput;
     if (hasName) {
         newInput = document.createElement('input');
@@ -319,7 +322,7 @@ function addPropertyToUL(ulElement, hasName) {
         newInput = document.createElement('div'); // Dummy div to fill up the spot.
         newInput.className = 'dummyDiv';
     }
-    
+
     newPropertyLi.appendChild(newInput);
     newPropertyLi.appendChild(newComboBox);
     newPropertyLi.appendChild(newRemoveButton);
@@ -351,7 +354,7 @@ function parseUL(ulElement) {
             var newJSON = parseUL(liElement.children[3]);
             resultTree.push({'name':name, 'type': 'extended', 'content':newJSON});
         } else if (value == 'multiple') {
-            var newJSON = parseUL(liElement.children[3]); // There will be a bunch of empty names. 
+            var newJSON = parseUL(liElement.children[3]); // There will be a bunch of empty names.
             resultTree.push({'name':name, 'type': 'multiple', 'content':newJSON});
         } else {
             resultTree.push({'name':name, 'type': 'column', 'content':value});
@@ -406,7 +409,7 @@ function generate() {
                 'type': 'FeatureCollection',
                 'features': []
         };
-        
+
         var rowsToSkipList = document.getElementById('rowSkip').value.split(/\s*,\s*/);
         if (rowsToSkipList.length == 1 && rowsToSkipList[0] == '') rowsToSkipList.pop();
 		var rowsToSkip = [];
@@ -427,12 +430,12 @@ function generate() {
 				}
 			});
 		//console.log(rowsToSkip);
-		
+
         // Coordinate handling.
         var latInput = document.getElementById('lat').value;
         var lngInput = document.getElementById('lng').value;
         var addressInput = document.getElementById('address').value;
-                        
+
         if (latInput == 'none' || lngInput == 'none') {
             alert('Not enough coordinate information.');
             return;
@@ -440,9 +443,9 @@ function generate() {
         refreshTable = false;
         rowsFinished = 0;
         var rootUL = document.getElementById('propertiesRoot');
-        
+
         var parsedJSON = parseUL(rootUL);
-        
+
         var rowsToGenerate = data.length - rowsToSkip.size;
         //console.log(rowsToGenerate);
         // Prepare marker list to preserve markers order in case asynchronous method is used.
@@ -573,7 +576,7 @@ function addDatumToGeoJSON(outputGeoJSON, parsedJSON, dataLat, dataLng, row, row
             }, 0);
     //alert(rowsFinished + ' finished');
     if (rowsFinished == rowsToGenerate) { // Have to put this here to handle the asynchronous calls.
-        document.getElementById('outputText').innerHTML = 
+        document.getElementById('outputText').innerHTML =
                 JSON.stringify(outputGeoJSON, undefined, 2);
         if (refreshTable) {
             populateTable();
@@ -629,7 +632,7 @@ function loadConfiguration() {
         openLocalFile(function (configurationFile) {
             var extension = getExtension(configurationFile.name);
             var reader = new FileReader();
-            
+
             if (extension == 'jcon' || true) {
                 reader.onload = function(event) {
                     try {
@@ -737,7 +740,7 @@ function openLocalFile(callback, filter) {
     setTimeout(function() {
             document.body.removeChild(fileInputElement);
         }, 0);
-    
+
 }
 
 function removeProgressTransition() {
