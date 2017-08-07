@@ -1,33 +1,36 @@
 import Ember from 'ember';
 import Table from 'ember-light-table'
 import layout from '../templates/components/parse-spreadsheet';
-/* global XLSX */
+/* globals XLSX, L */
 
 const {
   Component,
   computed,
   get,
-  set
+  set,
+  inject: {
+        service
+    }
 } = Ember;
 
 // "{"type":"GeometryCollection","geometries":[{"type":"Point","coordinates":[-84.38835610000001,33.733005]}]}"
 // {name: "Herb / James L. Key Elementary", styleUrl: "#icon-503-DB4436", styleHash: "5378268d", gx_media_links: "//www.youtube.com/embed/XKQzJptmlzI"}
 
-const Feature = Ember.Object.extend({
-    lat: null,
-    lng: null,
-    title: null,
-    description: null,
-    video: null,
-    audio: null,
-    images: []
-});
+// const Feature = Ember.Object.extend({
+//   lat: null,
+//   lng: null,
+//   title: null,
+//   description: null,
+//   video: null,
+//   audio: null,
+//   images: []
+// });
 
 const GeoJson = Ember.Object.extend({
   type: "Feature",
   geometry: {
     type: "Point",
-    coordinates: [0,1]
+    coordinates: [0, 1]
   },
   properties: {
 
@@ -35,10 +38,9 @@ const GeoJson = Ember.Object.extend({
 });
 
 export default Component.extend({
+  store: service(),
   layout,
   model: null,
-
-
 
   getExtension(fileName) {
     var dotIndex = fileName.lastIndexOf('.');
@@ -61,35 +63,43 @@ export default Component.extend({
 
   features: [],
   attributeMap: {
-      lat: null,
-      lng: null,
-      title: null,
-      description: null,
-      video: null,
-      audio: null,
-      images: []
+    lat: null,
+    lng: null,
+    title: null,
+    description: null,
+    video: null,
+    audio: null,
+    images: null,
+    filters: null
   },
 
-  hi(feature, layer) {
-      let popUpContent = `<table>
-  <tr>
-    <td>
-      Title
-    </td>
-    <td>
-      ${feature.properties.title}
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Description
-    </td>
-    <td>
-    ${feature.properties.description}
-    </td>
-  </tr>
-</table>`;
+  onEachFeature(feature, layer) {
+    let popUpContent = `
+    <table>
+      <tr>
+        <td>
+          Title
+        </td>
+        <td>
+          ${feature.properties.title}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Description
+        </td>
+        <td>
+        ${feature.properties.description}
+        </td>
+      </tr>
+    </table>`;
     layer.bindPopup(popUpContent);
+  },
+
+  pointToLayer(stankonia, latlng) {
+    return L.marker(latlng, {
+        draggable: true
+    });
   },
 
   // types: {label: 'Title'},
@@ -99,6 +109,16 @@ export default Component.extend({
       value: 'title'
     },
     {
+      label: 'Lat',
+      disabled: false,
+      value: 'lat'
+    },
+    {
+      label: 'Lng',
+      disabled: false,
+      value: 'lng'
+    },
+    {
       label: 'Description',
       disabled: false,
       value: 'description'
@@ -106,7 +126,7 @@ export default Component.extend({
     {
       label: 'Image(s)',
       disabled: false,
-      value: 'image'
+      value: 'images'
     },
     {
       label: 'Image Credit',
@@ -124,14 +144,9 @@ export default Component.extend({
       value: 'audio'
     },
     {
-      label: 'Lat',
-      disabled: false,
-      value: 'lat'
-    },
-    {
-      label: 'Lng',
-      disabled: false,
-      value: 'lng'
+        label: 'Filter',
+        disabled: false,
+        value: 'filters'
     }
   ],
 
@@ -139,14 +154,16 @@ export default Component.extend({
   strGeojson: null,
   grrr: [],
 
-  findOrNew(id, features) {
-      if (features.length  >= id + 1) {
-          return get(this, 'features')[id];
-      } else {
-          let newFeature = GeoJson.create();
-        //   features.push(newFeature);
-          return newFeature;
-      }
+  imageArray(images) {
+      // TODO account for more cases.
+      // This only accounts for image urls that are sperated by
+      // a comma and a space. It does acount for filenames with
+      // spaces by checking for `http` after the space.
+    if (images) {
+        return images.replace(/(.)(\s*http)/gi, '$1, $2').split(',');
+    } else {
+        return undefined;
+    }
   },
 
 
@@ -180,99 +197,92 @@ export default Component.extend({
                 resizable: true,
                 valuePath: key,
                 sortable: false,
-                value: key.dasherize()
+                value: key.dasherize(),
+                cellComponent: 'inline-edit'
               })
             });
             set(this, 'columns', columns);
-            set(this, 'model', json);
-            set(this, 'table', new Table(columns, this.get('model'), {
+            // set(this, 'model', json);
+            set(this, 'table', new Table(columns, json, {
               enableSync: this.get('enableSync')
             }));
             get(this, 'table.rows').forEach(() => {
-                get(this, 'features').push(GeoJson.create());
+              get(this, 'features').push(GeoJson.create());
             });
           });
         };
         reader.readAsBinaryString(file);
       } else if (extension == 'csv') {
-        reader.onload = (event) => {
-          //   var dataText = event.target.result;
-          //   data = this.parseText(dataText, ',');
-          //   this.prepareData();
+        reader.onload = (/*event*/) => {
+          //
         };
         reader.readAsText(file);
       }
     },
 
     generateFeaturs() {
-        let data = get(this, 'sheetJson');
-        let attributeMap = get(this, 'attributeMap');
-        let newFeature = {};
-        let foo = [];
-        console.log('foo', foo);
-        // data.forEach( () => {
-        //     foo.push({});
-        // });
-        data.forEach( (d, index) => {
-            console.log('index', index);
-            foo.push(
-            //     {
-            // title: d[attributeMap['title']],
-            // description: d[attributeMap['description']],
-            // lat: d[attributeMap['lat']],
-            // lng: d[attributeMap['lng']]});
-
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [d[attributeMap['lng']],d[attributeMap['lat']]]
-              },
-              properties: {
-                  title: d[attributeMap['title']],
-                  description: d[attributeMap['description']]
-              }
+      let data = get(this, 'sheetJson');
+      console.log('data', data);
+      let attributeMap = get(this, 'attributeMap');
+      let foo = [];
+      // data.forEach( () => {
+      //     foo.push({});
+      // });
+      data.forEach((d) => {
+          let feature = {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [d[attributeMap['lng']], d[attributeMap['lat']]]
+            },
+            properties: {
+              title: d[attributeMap['title']],
+              description: d[attributeMap['description']],
+              images: this.imageArray(d[attributeMap['images']]),
+              video: d[attributeMap['video']],
+              audio: d[attributeMap['audio']],
+              filters: {}
             }
-            // console.log('newFeature', newFeature);
-            // foo.push(newFeature);
-            // console.log('title', foo);
-        );
-        console.log('ff', foo);
-        set(this, 'geoJsonFeatures', foo);
-    });
-    },
-    mapAttribute(type, column) {
-        get(this, 'attributeMap')[type] = column.target.value
-        console.log('map', get(this, 'attributeMap'));
-        console.log('json', get(this, 'sheetJson'));
-        console.log('data', get(this, 'sheetJson'));
+          }
 
-    //   let json = get(this, 'sheetJson');
-    // //   let features = get(this, 'features');
-    // //   set(this, 'geoJsonFeatures', []);
-    // //   console.log('clear?', get(this, 'geoJsonFeatures'));
-    //   get(this, 'features').forEach( (feature, index) => {
-    //       console.log('attribute', attribute.target.value);
-    //       console.log('type', type);
-    //       console.log('json', json[index][attribute.target.value]);
-    //     //   let feature = get(this, 'features')[index];
-    //     //   console.log('feature', feature);
-    //     //   console.log('index', index);
-    //       if (type === 'lat') {
-    //           feature['geometry']['coordinates'][1] = parseFloat(json[index][attribute.target.value]);
-    //     //   } else if (type === 'lng') {
-    //     //       feature['geometry']['coordinates'][0] = parseFloat(attr[attribute.target.value]);
-    //     //   } else if ((type === 'image')) {
-    //     //       feature['properties']['images'].push(attr[attribute.target.value]);
-    //     //   } else {
-    //     //       feature['properties'][type] = attr[attribute.target.value];
-    //     //   }
-    //   });
-    // //   console.log('geoJsonFeatures', get(this, 'features'));
-    // //   console.log('grr', get(this, 'features'));
+          feature.properties.filters[attributeMap['filters']] = d[attributeMap['filters']];
+          // console.log('newFeature', newFeature);
+          // foo.push(newFeature);
+          // console.log('title', foo);
+        foo.push(feature);
+
+        get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
+        set(this, 'geoJsonFeatures', foo);
+        console.log('foo', foo);
+      });
+    },
+
+    mapAttribute(type, column) {
+      get(this, 'attributeMap')[type] = column.target.value
+
+      //   let json = get(this, 'sheetJson');
+      // //   let features = get(this, 'features');
+      // //   set(this, 'geoJsonFeatures', []);
+      // //   console.log('clear?', get(this, 'geoJsonFeatures'));
+      //   get(this, 'features').forEach( (feature, index) => {
+      //       console.log('attribute', attribute.target.value);
+      //       console.log('type', type);
+      //       console.log('json', json[index][attribute.target.value]);
+      //     //   let feature = get(this, 'features')[index];
+      //     //   console.log('feature', feature);
+      //     //   console.log('index', index);
+      //       if (type === 'lat') {
+      //           feature['geometry']['coordinates'][1] = parseFloat(json[index][attribute.target.value]);
+      //     //   } else if (type === 'lng') {
+      //     //       feature['geometry']['coordinates'][0] = parseFloat(attr[attribute.target.value]);
+      //     //   } else if ((type === 'image')) {
+      //     //       feature['properties']['images'].push(attr[attribute.target.value]);
+      //     //   } else {
+      //     //       feature['properties'][type] = attr[attribute.target.value];
+      //     //   }
+      //   });
+      // //   console.log('geoJsonFeatures', get(this, 'features'));
+      // //   console.log('grr', get(this, 'features'));
     }
   }
-
-
-
 });

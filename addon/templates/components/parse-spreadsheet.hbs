@@ -1,6 +1,7 @@
 <div style='width: 80%; margin: 0 auto;'>
 <input multiple="true" id='sheet' onchange={{action "loadSpreadsheet"}} accept="*" type="file"/>
 {{#if table}}
+<div class='table-container'>
 {{#light-table table height='65vh' as |t|}}
   {{t.head
     iconAscending='fa fa-sort-asc'
@@ -21,8 +22,9 @@
   {{/t.body}}
 
 {{/light-table}}
+</div>
 <div class='preview'>
-<div class='select'>
+<div class='select' multiple>
 {{#each types as |type|}}
   {{type.label}}
     <select onchange={{action 'mapAttribute' type.value}}>
@@ -36,37 +38,18 @@
       {{/each}}
     </select>
 {{/each}}
+<button {{action 'generateFeaturs'}}>Generate Features</button>
+
 </div>
-<a {{action 'generateFeaturs'}}><h1>generateFeatures</h1></a>
 
 <div class='geojson'>
   {{#leaflet-map lat=lat lng=lng zoom=zoom}}
-  {{tile-layer url="http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"}}
-  {{#each geoJsonFeatures as |feature|}}
-  {{!-- {{#popup-layer}}
-      <table>
-        <tr>
-          <td>
-            Title
-          </td>
-          <td>
-            {{feature.properties.title}}
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Description
-          </td>
-          <td>
-            {{feature.properties.description}}
-          </td>
-        </tr>
-      </table>
-    {{/popup-layer}} --}}
-  {{geojson-layer geoJSON=feature onEachFeature=hi}}
-  {{/each}}
+    {{tile-layer url="http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"}}
+    {{#each geoJsonFeatures as |feature|}}
+      {{geojson-layer geoJSON=feature onEachFeature=onEachFeature pointToLayer=pointToLayer}}
+    {{/each}}
   {{/leaflet-map}}
-  <textarea>{{strGeojson}}</textarea>
+  {{yield}}
 </div>
 </div>
 {{/if}}

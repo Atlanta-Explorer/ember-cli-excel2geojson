@@ -2,25 +2,28 @@
 
 This README outlines the details of collaborating on this Ember addon.
 
-## Installation
+## Development
+
+### Installation
 
 * `git clone <repository-url>` this repository
 * `cd ember-cli-excel2geojson`
-* `npm install`
+* `yarn install`
 * `bower install`
+* `ember g ember-cli-excel2geojson --dummy`
 
-## Running
+### Running
 
 * `ember serve`
 * Visit your app at [http://localhost:4200](http://localhost:4200).
 
-## Running Tests
+### Running Tests
 
 * `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
 
-## Building
+### Building
 
 * `ember build`
 

@@ -12,7 +12,10 @@ module.exports = {
         },{
           name: 'ember-leaflet',
           target: '~3.0.12'
-        }]
+      },{
+          name: 'ember-responsive',
+          target: '~2.0.4'
+      }]
       })
     }.bind(this));
   }
