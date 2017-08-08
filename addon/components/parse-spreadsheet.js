@@ -222,7 +222,6 @@ export default Component.extend({
 
     generateFeaturs() {
       let data = get(this, 'sheetJson');
-      console.log('data', data);
       let attributeMap = get(this, 'attributeMap');
       let foo = [];
       // data.forEach( () => {
@@ -253,7 +252,6 @@ export default Component.extend({
 
         get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
         set(this, 'geoJsonFeatures', foo);
-        console.log('foo', foo);
       });
     },
 
