@@ -15,5 +15,3 @@
 /libpeerconnection.log
 npm-debug.log*
 testem.log
-tests/dummy/tmp
-tests/dummy/node_modules

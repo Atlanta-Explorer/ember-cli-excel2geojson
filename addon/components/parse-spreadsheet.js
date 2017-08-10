@@ -13,19 +13,6 @@ const {
     }
 } = Ember;
 
-// "{"type":"GeometryCollection","geometries":[{"type":"Point","coordinates":[-84.38835610000001,33.733005]}]}"
-// {name: "Herb / James L. Key Elementary", styleUrl: "#icon-503-DB4436", styleHash: "5378268d", gx_media_links: "//www.youtube.com/embed/XKQzJptmlzI"}
-
-// const Feature = Ember.Object.extend({
-//   lat: null,
-//   lng: null,
-//   title: null,
-//   description: null,
-//   video: null,
-//   audio: null,
-//   images: []
-// });
-
 const GeoJson = Ember.Object.extend({
   type: "Feature",
   geometry: {
@@ -224,9 +211,7 @@ export default Component.extend({
       let data = get(this, 'sheetJson');
       let attributeMap = get(this, 'attributeMap');
       let foo = [];
-      // data.forEach( () => {
-      //     foo.push({});
-      // });
+
       data.forEach((d) => {
           let feature = {
             type: "Feature",
@@ -245,9 +230,6 @@ export default Component.extend({
           }
 
           feature.properties.filters[attributeMap['filters']] = d[attributeMap['filters']];
-          // console.log('newFeature', newFeature);
-          // foo.push(newFeature);
-          // console.log('title', foo);
         foo.push(feature);
 
         get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
@@ -257,30 +239,6 @@ export default Component.extend({
 
     mapAttribute(type, column) {
       get(this, 'attributeMap')[type] = column.target.value
-
-      //   let json = get(this, 'sheetJson');
-      // //   let features = get(this, 'features');
-      // //   set(this, 'geoJsonFeatures', []);
-      // //   console.log('clear?', get(this, 'geoJsonFeatures'));
-      //   get(this, 'features').forEach( (feature, index) => {
-      //       console.log('attribute', attribute.target.value);
-      //       console.log('type', type);
-      //       console.log('json', json[index][attribute.target.value]);
-      //     //   let feature = get(this, 'features')[index];
-      //     //   console.log('feature', feature);
-      //     //   console.log('index', index);
-      //       if (type === 'lat') {
-      //           feature['geometry']['coordinates'][1] = parseFloat(json[index][attribute.target.value]);
-      //     //   } else if (type === 'lng') {
-      //     //       feature['geometry']['coordinates'][0] = parseFloat(attr[attribute.target.value]);
-      //     //   } else if ((type === 'image')) {
-      //     //       feature['properties']['images'].push(attr[attribute.target.value]);
-      //     //   } else {
-      //     //       feature['properties'][type] = attr[attribute.target.value];
-      //     //   }
-      //   });
-      // //   console.log('geoJsonFeatures', get(this, 'features'));
-      // //   console.log('grr', get(this, 'features'));
     }
   }
 });
