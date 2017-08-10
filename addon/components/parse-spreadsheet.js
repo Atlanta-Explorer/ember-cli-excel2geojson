@@ -157,7 +157,21 @@ export default Component.extend({
 
 
   didInsertElement() {
+    this._super(...arguments);
+    this.setupParseSpreadsheet();
+  },
 
+  willDestroyElement() {
+    this._super(...arguments);
+    this.teardownParseSpreadsheet();
+  },
+
+  setupParseSpreadsheet() {
+      //
+  },
+
+  teardownParseSpreadsheet() {
+      get(this, 'parse-spreadsheet').destroy();
   },
 
   actions: {

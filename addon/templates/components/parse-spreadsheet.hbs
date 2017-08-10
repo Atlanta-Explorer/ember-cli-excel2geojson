@@ -1,5 +1,5 @@
 <div style='width: 80%; margin: 0 auto;'>
-<input multiple="true" id='sheet' onchange={{action "loadSpreadsheet"}} accept="*" type="file"/>
+<input id='sheet' onchange={{action "loadSpreadsheet"}} accept="*" type="file"/>
 {{#if table}}
 <div class='table-container'>
 {{#light-table table height='65vh' as |t|}}
