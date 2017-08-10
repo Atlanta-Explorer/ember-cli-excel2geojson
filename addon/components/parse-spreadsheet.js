@@ -61,6 +61,8 @@ export default Component.extend({
   },
 
   onEachFeature(feature, layer) {
+    // TODO Add all attributes.
+    // Content for map preview popups. Does not show all attributes.
     let popUpContent = `
     <table>
       <tr>
