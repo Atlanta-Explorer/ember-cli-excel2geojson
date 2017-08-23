@@ -15,6 +15,9 @@ module.exports = {
       },{
           name: 'ember-responsive',
           target: '~2.0.4'
+      }, {
+          name: 'fs-extra',
+          target: '~4.0.1'
       }]
       })
     }.bind(this));

@@ -28,6 +28,8 @@ export default Component.extend({
   store: service(),
   layout,
   model: null,
+  type: 'file',
+  attributeBindings: ['type', 'value'],
 
   getExtension(fileName) {
     var dotIndex = fileName.lastIndexOf('.');
@@ -155,10 +157,65 @@ export default Component.extend({
     }
   },
 
+  // Split this into function to make testing easier.
+  xlsx2json(file) {
+      var workbook = XLSX.read(file, {
+        'type': 'binary'
+      });
+
+      workbook.SheetNames.forEach((sheetName) => {
+        let columns = [];
+        let json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        set(this, 'sheetJson', json);
+        set(this, 'strGeojson', JSON.stringify(get(this, 'geojson'), undefined, 4));
+        set(this, 'tableColumns', Object.keys(json[0]));
+        Object.keys(json[0]).forEach(function(key) {
+          columns.push({
+            label: key,
+            resizable: true,
+            valuePath: key,
+            sortable: false,
+            value: key.dasherize(),
+            cellComponent: 'inline-edit'
+          })
+        });
+        set(this, 'columns', columns);
+        // set(this, 'model', json);
+        set(this, 'table', new Table(columns, json, {
+          enableSync: this.get('enableSync')
+        }));
+        get(this, 'table.rows').forEach(() => {
+          get(this, 'features').push(GeoJson.create());
+        });
+      });
+  },
+
+  loadSpreadsheet(file) { // Receive data through loading a spreadsheet.
+    const extension = this.getExtension(file.name);
+    const reader = new FileReader();
+    alert(extension)
+
+    if (extension == 'xlsx') {
+      reader.onload = (event) => {
+        this.xlsx2json(event.target.result)
+      };
+      reader.readAsBinaryString(file);
+    } else if (extension == 'csv') {
+      reader.onload = (/*event*/) => {
+        //
+      };
+      reader.readAsText(file);
+    }
+  },
 
   didInsertElement() {
     this._super(...arguments);
     this.setupParseSpreadsheet();
+    let fileInput = this.$('#sheet')[0];
+
+    fileInput.onchange = (event) => {
+      this.loadSpreadsheet(event.target.files[0]);
+    };
   },
 
   willDestroyElement() {
@@ -171,58 +228,10 @@ export default Component.extend({
   },
 
   teardownParseSpreadsheet() {
-      get(this, 'parse-spreadsheet').destroy();
+      this.destroy();
   },
 
   actions: {
-    loadSpreadsheet() { // Receive data through loading a spreadsheet.
-      var fileInput = document.getElementById("sheet");
-      var file = fileInput.files[0]
-      var extension = this.getExtension(file.name);
-      var reader = new FileReader();
-
-      if (extension == 'xlsx') {
-        reader.onload = (event) => {
-          var xlsxData = event.target.result;
-          var workbook = XLSX.read(xlsxData, {
-            'type': 'binary'
-          });
-
-          workbook.SheetNames.forEach((sheetName) => {
-            let columns = [];
-            let json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-            set(this, 'sheetJson', json);
-            set(this, 'strGeojson', JSON.stringify(get(this, 'geojson'), undefined, 4));
-            set(this, 'tableColumns', Object.keys(json[0]));
-            Object.keys(json[0]).forEach(function(key) {
-              columns.push({
-                label: key,
-                resizable: true,
-                valuePath: key,
-                sortable: false,
-                value: key.dasherize(),
-                cellComponent: 'inline-edit'
-              })
-            });
-            set(this, 'columns', columns);
-            // set(this, 'model', json);
-            set(this, 'table', new Table(columns, json, {
-              enableSync: this.get('enableSync')
-            }));
-            get(this, 'table.rows').forEach(() => {
-              get(this, 'features').push(GeoJson.create());
-            });
-          });
-        };
-        reader.readAsBinaryString(file);
-      } else if (extension == 'csv') {
-        reader.onload = (/*event*/) => {
-          //
-        };
-        reader.readAsText(file);
-      }
-    },
-
     generateFeaturs() {
       let data = get(this, 'sheetJson');
       let attributeMap = get(this, 'attributeMap');
@@ -254,6 +263,10 @@ export default Component.extend({
     },
 
     mapAttribute(type, column) {
+      const data = get(this, 'sheetJson');
+      if (type === 'description') {
+          $(`<p>${data[0][column.target.value]}</p>`).appendTo('#preview-description');
+      }
       get(this, 'attributeMap')[type] = column.target.value
     }
   }
