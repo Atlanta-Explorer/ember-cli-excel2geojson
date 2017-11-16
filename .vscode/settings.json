@@ -1,0 +1,14 @@
+{
+  "files.exclude": {
+    "dist": "explorerExcludedFiles",
+    "tmp": "explorerExcludedFiles",
+    "node_modules": "explorerExcludedFiles",
+    "bower_components": "explorerExcludedFiles",
+    ".sass-cache": "explorerExcludedFiles",
+    "connect.lock": "explorerExcludedFiles",
+    "coverage/*": "explorerExcludedFiles",
+    "libpeerconnection.log": "explorerExcludedFiles",
+    "npm-debug.log*": "explorerExcludedFiles",
+    "testem.log": "explorerExcludedFiles"
+  }
+}
