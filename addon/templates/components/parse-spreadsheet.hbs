@@ -24,8 +24,127 @@
 {{/light-table}}
 </div>
 <div class='preview'>
-<div class='select' multiple>
-{{#each types as |type|}}
+<div class='select'>
+  Title
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'title'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Lat
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'lat'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Lng
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'lng'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Description <i class="fa fa-plus-circle" aria-hidden="true" onclick={{action 'addInput'}}></i>
+  <div class='description'>
+    {{#each description as |d|}}
+  <select onchange={{action 'concatDescriptionPreview' 'description'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+  {{/each}}
+</div>
+  Image(s),
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'images'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Image Credit
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'image-credit'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Video
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'video'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Audio
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'audio'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+  Filter
+  <div class=''>
+  <select onchange={{action 'mapAttribute' 'filter'}}>
+    <option disabled selected>
+      Select One
+    </option>
+    {{#each columns as |column|}}
+      <option value='{{column.label}}'>
+        {{column.label}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+{{!-- {{#each types as |type|}}
   {{type.label}}
     <select onchange={{action 'mapAttribute' type.value}}>
       <option disabled selected>
@@ -37,13 +156,25 @@
         </option>
       {{/each}}
     </select>
-{{/each}}
-<button {{action 'generateFeaturs'}}>Generate Features</button>
+{{/each}} --}}
+{{#if (and attributeMap.lat attributeMap.lng)}}
+  <button {{action 'generateFeaturs'}}>Generate Features</button>
+{{/if}}
 
 </div>
 
-<div class='description-preview' id='preview-description'>
+<div class='preview-detail'>
+<h2>Sample Detail Window</h2>
+<div class='swiper-container'>
+<div class='swiper-wrapper'>
 
+</div>
+<div class="swiper-button-prev"></div>
+<div class="swiper-button-next"></div>
+  </div>
+  <div id='preview-video' />
+  <div id='preview-audio' />
+  <div class='description-preview' id='preview-description' />
 </div>
 
 <div class='geojson'>

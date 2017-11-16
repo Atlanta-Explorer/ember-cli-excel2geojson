@@ -9,6 +9,9 @@
     "coverage/*": "explorerExcludedFiles",
     "libpeerconnection.log": "explorerExcludedFiles",
     "npm-debug.log*": "explorerExcludedFiles",
-    "testem.log": "explorerExcludedFiles"
+    "testem.log": "explorerExcludedFiles",
+    ".DS_Store": "explorerExcludedFiles",
+    ".vscode": "explorerExcludedFiles",
+    ".vscode/settings.json": "explorerExcludedFiles"
   }
 }
