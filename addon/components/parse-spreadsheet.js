@@ -1,53 +1,28 @@
-import Ember from 'ember';
+import { assert } from '@ember/debug';
+import { inject as service } from '@ember/service';
+import { oneWay } from '@ember/object/computed';
+import $ from 'jquery';
+import Component from '@ember/component';
+import { set, get } from '@ember/object';
+import { A } from '@ember/array';
 import Table from 'ember-light-table'
 import layout from '../templates/components/parse-spreadsheet';
-/* globals XLSX, L */
+import GeoJson from '../lib/geojson';
+import XLSX from 'xlsx';
 
-const {
-  Component,
-  computed,
-  get,
-  set,
-  inject: {
-        service
-    }
-} = Ember;
-
-const GeoJson = Ember.Object.extend({
-  type: "Feature",
-  geometry: {
-    type: "Point",
-    coordinates: [0, 1]
-  },
-  properties: {
-
-  }
-});
-
-export default Component.extend({
+const  GeojsonParseSpreadsheetComponent = Component.extend({
   store: service(),
   layout,
   model: null,
   type: 'file',
-  attributeBindings: ['type', 'value'],
+  attributeBindings: A(['type', 'value']),
 
-  getExtension(fileName) {
-    var dotIndex = fileName.lastIndexOf('.');
-    if (dotIndex >= 0) {
-      return fileName.substring(dotIndex + 1).toLowerCase();
-    }
-    return '';
+  isLoading: oneWay('fetchRecords.isRunning'),
+
+  init() {
+    this._super(...arguments);
   },
 
-  lat: 33.7489954,
-  lng: -84.3879824,
-  zoom: 10,
-
-  isLoading: computed.oneWay('fetchRecords.isRunning'),
-
-  table: null,
-
-  tabelColumns: [],
   geoJsonFeatures: [],
 
   features: [],
@@ -60,37 +35,6 @@ export default Component.extend({
     audio: null,
     images: null,
     filters: null
-  },
-
-  onEachFeature(feature, layer) {
-    // TODO Add all attributes.
-    // Content for map preview popups. Does not show all attributes.
-    let popUpContent = `
-    <table>
-      <tr>
-        <td>
-          Title
-        </td>
-        <td>
-          ${feature.properties.title}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Description
-        </td>
-        <td>
-        ${feature.properties.description}
-        </td>
-      </tr>
-    </table>`;
-    layer.bindPopup(popUpContent);
-  },
-
-  pointToLayer(stankonia, latlng) {
-    return L.marker(latlng, {
-        draggable: true
-    });
   },
 
   // types: {label: 'Title'},
@@ -190,41 +134,39 @@ export default Component.extend({
       });
   },
 
-  loadSpreadsheet(file) { // Receive data through loading a spreadsheet.
+  loadSpreadsheet(file) {
     const extension = this.getExtension(file.name);
     const reader = new FileReader();
-    alert(extension)
 
-    if (extension == 'xlsx') {
+    // TODO: Should we accept `xls` files?
+    if (extension === 'xlsx') {
       reader.onload = (event) => {
         this.xlsx2json(event.target.result)
       };
       reader.readAsBinaryString(file);
     } else if (extension == 'csv') {
       reader.onload = (/*event*/) => {
-        //
+        // TODO: Do we need to support CSV?
       };
       reader.readAsText(file);
     }
+
+    assert('File must end in \'.xlsx\'', extension === 'xlsx');
   },
 
   didInsertElement() {
-    this._super(...arguments);
-    this.setupParseSpreadsheet();
-    let fileInput = this.$('#sheet')[0];
+    // this._super(...arguments);
+    // this.setupParseSpreadsheet();
+    // let fileInput = this.$('#sheet')[0];
 
-    fileInput.onchange = (event) => {
-      this.loadSpreadsheet(event.target.files[0]);
-    };
+    // fileInput.onchange = (event) => {
+    //   this.loadSpreadsheet(event.target.files[0]);
+    // };
   },
 
   willDestroyElement() {
     this._super(...arguments);
     this.teardownParseSpreadsheet();
-  },
-
-  setupParseSpreadsheet() {
-      //
   },
 
   teardownParseSpreadsheet() {
@@ -239,9 +181,9 @@ export default Component.extend({
 
       data.forEach((d) => {
           let feature = {
-            type: "Feature",
+            type: 'Feature',
             geometry: {
-              type: "Point",
+              type: 'Point',
               coordinates: [d[attributeMap['lng']], d[attributeMap['lat']]]
             },
             properties: {
@@ -271,3 +213,5 @@ export default Component.extend({
     }
   }
 });
+
+export default GeojsonParseSpreadsheetComponent;

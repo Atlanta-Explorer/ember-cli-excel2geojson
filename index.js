@@ -4,9 +4,15 @@ module.exports = {
   description: 'ember-cli-excel2geojson installation blueprint',
   normalizeEntityName() {},
 
-  isDevelopingAddon: function() {
-      return true;
-  },
+  // includeed: function included(app) {
+  //     this._super.included(app);
+  //     app.import(`${app.bowerDirectory}/js-xlsx/dist/xlsx.js`);
+  //     app.import('vendor/js-xlsx.js', {
+  //       exports: {
+  //         XLSX: ['default']
+  //       }
+  //     })
+  // },
 
   beforeInstall() {
     return this.addBowerPackageToProject('js-xlsx', '0.11.0').then(function() {
@@ -17,13 +23,13 @@ module.exports = {
         },{
           name: 'ember-leaflet',
           target: '~3.0.12'
-      },{
-          name: 'ember-responsive',
-          target: '~2.0.4'
-      }, {
-          name: 'fs-extra',
-          target: '~4.0.1'
-      }]
+        },{
+            name: 'ember-responsive',
+            target: '~2.0.4'
+        }, {
+            name: 'fs-extra',
+            target: '~4.0.1'
+        }]
       })
     }.bind(this));
   }

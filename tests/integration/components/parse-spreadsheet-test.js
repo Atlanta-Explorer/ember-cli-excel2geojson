@@ -4,7 +4,6 @@ import hbs from 'htmlbars-inline-precompile';
 // import { click, fillIn, find } from 'ember-native-dom-helpers';
 import sinon from 'sinon';
 import jQuery from 'jquery';
-import readFileSync from 'fs-extra';
 /* global require */
 const fs = require('fs-extra')
 moduleForComponent('parse-spreadsheet', 'Integration | Component | parse-spreadsheet', {

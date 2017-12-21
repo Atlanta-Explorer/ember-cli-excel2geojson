@@ -4,7 +4,7 @@ module.exports = {
   normalizeEntityName() {},
 
   beforeInstall() {
-    return this.addBowerPackageToProject('js-xlsx', '0.11.0').then(function() {
+    // return this.addBowerPackageToProject('js-xlsx', '0.11.0').then(function() {
         return this.addAddonsToProject({
         packages: [{
           name: 'ember-light-table',
@@ -20,6 +20,6 @@ module.exports = {
           target: '~4.0.1'
       }]
       })
-    }.bind(this));
+    // }.bind(this));
   }
 };

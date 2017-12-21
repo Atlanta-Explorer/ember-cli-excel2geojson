@@ -1,6 +1,8 @@
 {
   "name": "ember-cli-excel2geojson",
-  "dependencies": {},
+  "dependencies": {
+    "js-xlsx": "^0.11.14"
+  },
   "devDependencies": {
     "js-xlsx": "^0.11.1"
   }

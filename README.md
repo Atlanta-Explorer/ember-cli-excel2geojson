@@ -16,6 +16,24 @@ yarn installation
 ember g excel2geojson
 ```
 
+## Development
+
+### Clone this repo and install dependencies
+~~~bash
+git clone https://github.com/Atlanta-Explorer/ember-cli-excel2geojson.git
+cd ember-cli-excel2geojson
+yarn install # or npm install
+bower install # this may not be needed
+~~~
+
+### Run the dummy app
+~~~bash
+ember s
+~~~
+
+See the dummy app at [http://localhost:4200](http://localhost:4200)
+
+
 ### Usage
 When used as a block, a simple file input filed will be rendered. After an excel file is uploaded, it will appear in an [ember-light-table](http://offirgolan.github.io/ember-light-table/). Below the table will be a list of select fields for the control attributes.
 
