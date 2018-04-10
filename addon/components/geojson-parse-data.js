@@ -34,6 +34,11 @@ export default Component.extend({
       value: 'title'
     },
     {
+      label: 'Coords',
+      disabled: false,
+      value: 'coords'
+    },
+    {
       label: 'Lat',
       disabled: false,
       value: 'lat'

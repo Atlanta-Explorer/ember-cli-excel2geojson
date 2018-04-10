@@ -1,4 +1,5 @@
 /* eslint-env node*/
+
 module.exports = {
   name: 'ember-cli-excel2geojson',
   description: 'ember-cli-excel2geojson installation blueprint',
