@@ -3,6 +3,7 @@ import { get, set } from '@ember/object';
 import GeoData from './geo-data';
 
 export default({
+  /*
   setFeatures(json) {
     let features = A([]);
 
@@ -19,9 +20,13 @@ export default({
           }
         );
       } else {
-        geo.setProperties({
-          geometry: feature.geometry
-        });
+        geo = Object.assign(
+          feature.properties,
+          {
+
+
+          }
+        );
       }
 
 
@@ -29,10 +34,12 @@ export default({
     });
     return features;
   },
+  */
 
-  init() {
-    set(this, 'features', this.setFeatures(JSON.parse(event.target.result)));
-    set(this, 'table', GeoData.setTable(get(this, 'features')))
+init() {
+    //console.log(Object.getOwnPropertyNames(A(JSON.parse(event.target.result).features)));
+    set(this, 'features', A(JSON.parse(event.target.result).features));
+    set(this, 'table', GeoData.setTable(get(this, 'features')));
     return this;
   }
 });

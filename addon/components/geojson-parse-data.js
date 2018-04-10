@@ -15,6 +15,11 @@ export default Component.extend({
   data: null,
   table: null,
   bounds: A([[33.7489954, -84.3879824]]),
+  /*
+  newBounds: Ember.computed('bounds', function() {
+  return L.fitBounds(bounds);
+}),
+*/
 
   getExtension(fileName) {
     // TODO: Should we check mime type? https://stackoverflow.com/a/29672957/1792144
@@ -69,6 +74,7 @@ export default Component.extend({
         value: 'filters'
     }
   ],
+  sheetJson: null,
 
   didInsertElement() {
     let dataInput = $('#datafile').first()[0];
@@ -94,10 +100,18 @@ export default Component.extend({
 
   actions: {
     layerAdded(feature) {
+      
       if (feature.layer._latlng) {
-        get(this, 'bounds').push([feature.layer._latlng.lat, feature.layer._latlng.lng]);
+       // get(this, 'bounds').push([feature.layer._latlng.lat, feature.layer._latlng.lng]);
+       get(this, 'bounds').push([feature.layer._latlng]);
+      }
+      else {
+        get(this, 'bounds').push(feature.layer._latlngs);
+        //console.log(feature.layer._latlngs.bounds);
       }
       feature.layer._map.fitBounds(get(this, 'bounds'));
+
+
     },
 
     updateLocation(feature, event) {
@@ -108,8 +122,58 @@ export default Component.extend({
       });
     },
 
+    onEachFeature(feature, layer) {
+      var popupText = "";
+      for (var key in feature.properties) {
+        if (!feature.properties.hasOwnProperty(key)) continue;
+        var obj = feature.properties[key];
+          
+          popupText += (key + ": " + obj + "<br />");
+        
+        layer.bindPopup(popupText); 
+      }
+      
+      layer.options.draggable = true;
+    },
+
+
     updateFeature(attribute, feature, event) {
       set(feature, `${attribute}`, event);
+    },
+
+    onClickFeature(feature, layer) {
+    // Assuming the clicked feature is a shape, not a point marker.
+    map.fitBounds(event.layer.getBounds());
+},
+    generateFeaturs() {
+      alert(table);
+      let data = get(this, 'table');
+      let attributeMap = get(this, 'attributeMap');
+      let foo = [];
+
+      data.forEach((d) => {
+          let feature = {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [d[attributeMap['lng']], d[attributeMap['lat']]]
+            },
+            properties: {
+              title: d[attributeMap['title']],
+              description: d[attributeMap['description']],
+              images: this.imageArray(d[attributeMap['images']]),
+              video: d[attributeMap['video']],
+              audio: d[attributeMap['audio']],
+              filters: {}
+            }
+          }
+
+          feature.properties.filters[attributeMap['filters']] = d[attributeMap['filters']];
+        foo.push(feature);
+
+        get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
+        set(this, 'geoJsonFeatures', foo);
+      });
     },
 
     mapAttribute(type, column) {
@@ -121,3 +185,4 @@ export default Component.extend({
     }
   }
 });
+

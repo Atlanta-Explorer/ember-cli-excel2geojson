@@ -44,24 +44,11 @@
   {{/if}}
 
 {{#if data.features}}
-<style>.leaflet-container { height: 40vh; width: 100vw; }</style>
-{{#leaflet-map bounds=bounds onLayeradd=(action 'layerAdded') as |map|}}
-  {{tile-layer url='http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'}}
-  {{#each data.features as |feature|}}
-    {{#map.marker lat=feature.lat lng=feature.lng draggable=true onDragend=(action 'updateLocation' feature) as |marker|}}
-      {{#marker.popup}}
-      <table>
-        <tbody>
-        {{#each-in feature as |key value|}}
-        <tr>
-          <td>{{key}}</td>
-          <td>{{input value=value change=(action 'updateFeature' key feature)}}</td>
-        </tr>
-        {{/each-in}}
-        </tbody>
-      </table>
-      {{/marker.popup}}
-    {{/map.marker}}
-  {{/each}}
-{{/leaflet-map}}
+  <style>.leaflet-container { height: 40vh; width: 100vw; }</style>
+  {{#leaflet-map bounds=bounds onLayeradd=(action 'layerAdded') onClick=(action 'onClickFeature') as |map|}}
+    {{tile-layer url='http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'}}
+      {{#each data.features as |feature|}}
+        {{map.geoJSON geoJSON=feature onEachFeature=(action "onEachFeature")}}
+      {{/each}}
+  {{/leaflet-map}}
 {{/if}}

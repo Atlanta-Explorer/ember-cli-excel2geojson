@@ -19,7 +19,13 @@ const GeoData = ({
   },
 
   setTable(features) {
-    return new Table(this.setTableColumns(features), features, {
+    let tableData = A([]);
+
+    features.forEach(function(feature) {
+      tableData.push(feature);
+    });
+
+    return new Table(this.setTableColumns(features), tableData, {
       enableSync: true
     });
   }
