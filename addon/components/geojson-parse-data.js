@@ -5,6 +5,7 @@ import { A } from '@ember/array';
 import layout from '../templates/components/geojson-parse-data';
 import $ from 'jquery';
 import GeojsonData from '../lib/geojson-data';
+import GeoData from '../lib/geo-data';
 import SpreadsheetData from '../lib/spreadsheet-data';
 
 const fileTypes = A(['xlsx', 'json', 'geojson']);
@@ -25,6 +26,17 @@ export default Component.extend({
     // TODO: Should we check mime type? https://stackoverflow.com/a/29672957/1792144
     // It would be nice, but not a prioritory.
     return fileName.name.split('.').pop();
+  },
+    attributeMap: {
+    lat: null,
+    lng: null,
+    coords: null,
+    title: null,
+    description: null,
+    video: null,
+    audio: null,
+    images: null,
+    filters: null
   },
 
     // types: {label: 'Title'},
@@ -150,9 +162,9 @@ export default Component.extend({
     // Assuming the clicked feature is a shape, not a point marker.
     map.fitBounds(event.layer.getBounds());
 },
+    
     generateFeaturs() {
-      alert(table);
-      let data = get(this, 'table');
+      let data = get(this, 'sheetJson');
       let attributeMap = get(this, 'attributeMap');
       let foo = [];
 
