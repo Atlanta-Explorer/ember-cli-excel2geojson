@@ -1,6 +1,7 @@
 import { A } from '@ember/array';
 import { dasherize } from '@ember/string';
 import Table from 'ember-light-table';
+import { get, set, setProperties } from '@ember/object';
 import wellknown from 'wellknown';
 
 // Setup the table columns
@@ -24,13 +25,13 @@ const GeoData = ({
     let tableData = A([]);
 
     features.forEach(function(feature) {
-      if(feature.hasOwnProperty('wkt_geom')) {
-        let geom = wellknown(feature['wkt_geom']); //returns geojson GEOMETRY object with type,coordinates
-        //add 2 columns (type, coordinates) and their data 
-        feature.type = geom['type'];
-        feature.coords = geom['coordinates'];
-        delete feature.wkt_geom ; //remove the wkt_geom column as it is now redundant
-      }
+      // if(feature.hasOwnProperty('wkt_geom')) {
+      //   let geom = wellknown(feature['wkt_geom']); //returns geojson GEOMETRY object with type,coordinates
+      //   //add 2 columns (type, coordinates) and their data 
+      //   feature.type = geom['type'];
+      //   feature.coords = geom['coordinates'];
+      //   delete feature.wkt_geom ; //remove the wkt_geom column as it is now redundant
+      // }
       tableData.push(feature);
     });
 

@@ -1,4 +1,6 @@
 import { assert } from '@ember/debug';
+import { inject as service } from '@ember/service';
+import { oneWay } from '@ember/object/computed';
 import Component from '@ember/component';
 import { get, set, setProperties } from '@ember/object';
 import { A } from '@ember/array';
@@ -13,8 +15,10 @@ const reader = new FileReader();
 
 export default Component.extend({
   layout,
+  store: service(),
   data: null,
   table: null,
+  tableObject: null,
   bounds: A([[33.7489954, -84.3879824]]),
   /*
   newBounds: Ember.computed('bounds', function() {
@@ -93,6 +97,18 @@ export default Component.extend({
   ],
   sheetJson: null,
 
+  imageArray(images) {
+      // TODO account for more cases.
+      // This only accounts for image urls that are sperated by
+      // a comma and a space. It does acount for filenames with
+      // spaces by checking for `http` after the space.
+    if (images) {
+        return images.replace(/(.)(\s*http)/gi, '$1, $2').split(',');
+    } else {
+        return undefined;
+    }
+  },
+
   didInsertElement() {
     let dataInput = $('#datafile').first()[0];
     dataInput.onchange = (event) => {
@@ -163,12 +179,15 @@ export default Component.extend({
     map.fitBounds(event.layer.getBounds());
 },
     
-    generateFeaturs() {
-      let data = get(this, 'sheetJson');
+    generateFeatures() {
+      let table = get(this, 'data.tableJson');
+      //alert(Object.keys(table));
       let attributeMap = get(this, 'attributeMap');
       let foo = [];
 
-      data.forEach((d) => {
+      table.forEach((d) => {
+        //alert([d[attributeMap['title']]]);
+        
           let feature = {
             type: 'Feature',
             geometry: {
@@ -189,14 +208,16 @@ export default Component.extend({
         foo.push(feature);
 
         get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
-        set(this, 'geoJsonFeatures', foo);
+        set(this, 'features', foo);
+        
       });
+      
     },
 
     mapAttribute(type, column) {
-      const data = get(this, 'sheetJson');
+      const tdata = get(this, 'data.tableJson');
       if (type === 'description') {
-          $(`<p>${data[0][column.target.value]}</p>`).appendTo('#preview-description');
+          $(`<p>${tdata[0][column.target.value]}</p>`).appendTo('#preview-description');
       }
       get(this, 'attributeMap')[type] = column.target.value
     }
