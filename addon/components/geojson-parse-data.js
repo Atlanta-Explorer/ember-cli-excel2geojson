@@ -140,7 +140,6 @@ export default Component.extend({
       }
       else {
         get(this, 'bounds').push(feature.layer._latlngs);
-        //console.log(feature.layer._latlngs.bounds);
       }
       feature.layer._map.fitBounds(get(this, 'bounds'));
 
@@ -187,7 +186,25 @@ export default Component.extend({
 
       table.forEach((d) => {
         //alert([d[attributeMap['title']]]);
-        
+        if(d.hasOwnProperty('coords')) {
+          let feature = {
+            type: 'Feature',
+            geometry: {
+              type: d['type'],
+              coordinates: d[attributeMap['coords']]
+            },
+            properties: {
+              title: d[attributeMap['title']],
+              description: d[attributeMap['description']],
+              images: this.imageArray(d[attributeMap['images']]),
+              video: d[attributeMap['video']],
+              audio: d[attributeMap['audio']],
+              filters: {}
+            }
+        }
+          feature.properties.filters[attributeMap['filters']] = d[attributeMap['filters']];
+          foo.push(feature);
+        } else {
           let feature = {
             type: 'Feature',
             geometry: {
@@ -203,14 +220,17 @@ export default Component.extend({
               filters: {}
             }
           }
-
           feature.properties.filters[attributeMap['filters']] = d[attributeMap['filters']];
-        foo.push(feature);
+          foo.push(feature);
+          }
 
-        get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
-        set(this, 'features', foo);
         
-      });
+
+       // get(this, 'store').createRecord('vector_feature', {geojson: feature, vector_layer: get(this, 'layer')});
+       
+        
+      }); 
+      set(this, 'data.features', foo);
       
     },
 

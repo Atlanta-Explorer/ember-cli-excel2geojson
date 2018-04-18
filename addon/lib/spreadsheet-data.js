@@ -22,9 +22,6 @@ export default({
       
     });
 
-
-    
-      // }
     set(this, 'table', GeoData.setTable(A(json)));
     set(this, 'tableJson', json);
     return this;
