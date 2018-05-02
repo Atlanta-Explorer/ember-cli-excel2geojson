@@ -5,8 +5,7 @@ module.exports = function(defaults) {
   var app = new EmberAddon(defaults, {
     // Add options here
   });
-app.import('bower_components/wellknown/wellknown.js');
-app.import('vendor/shims/wellknown.js');
+
   /*
     This build file specifies the options for the dummy test app of this
     addon, located in `/tests/dummy`

@@ -15,6 +15,11 @@ module.exports = {
   //     })
   // },
 
+  included() {
+  this._super.included.apply(this, arguments);
+  this.import('vendor/shims/wellknown.js');
+  },
+
   beforeInstall() {
     return this.addBowerPackageToProject('js-xlsx', '0.11.0').then(function() {
         return this.addAddonsToProject({
@@ -30,7 +35,11 @@ module.exports = {
         }, {
             name: 'fs-extra',
             target: '~4.0.1'
-        }]
+        }, {
+            name: 'wellknown',
+            target: '~0.5.0'
+        }
+        ]
       })
     }.bind(this));
   }

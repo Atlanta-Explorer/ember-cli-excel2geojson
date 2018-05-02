@@ -2,7 +2,6 @@ import { A } from '@ember/array';
 import { dasherize } from '@ember/string';
 import Table from 'ember-light-table';
 import { get, set, setProperties } from '@ember/object';
-import wellknown from 'wellknown';
 
 // Setup the table columns
 const GeoData = ({
