@@ -7,7 +7,7 @@ import { set, get } from '@ember/object';
 import { A } from '@ember/array';
 import Table from 'ember-light-table'
 import layout from '../templates/components/parse-spreadsheet';
-import GeoJson from '../lib/geojson';
+import GeoJson from '../lib/geojson-data';
 import XLSX from 'xlsx';
 
 const  GeojsonParseSpreadsheetComponent = Component.extend({
