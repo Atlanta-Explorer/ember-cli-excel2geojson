@@ -21,5 +21,8 @@ module.exports = {
       }]
       })
     // }.bind(this));
-  }
+  },
+   afterInstall() {
+    return this.addBowerPackageToProject('wellknown');
+  },
 };
